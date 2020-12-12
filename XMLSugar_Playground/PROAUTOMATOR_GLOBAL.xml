@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+   <Engineering version="V15.1" />
+   <SW.Blocks.GlobalDB ID="0">
+      <AttributeList>
+         <AutoNumber>true</AutoNumber>
+         <Name>PROAUTOMATOR_GLOBAL</Name>
+         <Number>10</Number>
+         <ProgrammingLanguage>DB</ProgrammingLanguage>
+         <Interface>
+            <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v3">
+               <Section Name="Static">
+                  <Member Name="ACTUATORS" Datatype="Struct" Remanence="NonRetain" Accessibility="Public">
+                     <Member Name="EV" Datatype="Struct">
+                        <Member Name="LimitSwitches" Datatype="Struct">
+                           <Member Name="Home" Datatype="Bool">
+                           </Member>
+                           <Member Name="Work" Datatype="Bool">
+                           </Member>
+                        </Member>
+                        <Member Name="Conditions" Datatype="Struct">
+                           <Member Name="Home" Datatype="Bool">
+                           </Member>
+                           <Member Name="Work" Datatype="Bool">
+                           </Member>
+                        </Member>
+                        <Member Name="Commands" Datatype="Struct">
+                           <Member Name="Home" Datatype="Bool">
+                           </Member>
+                           <Member Name="Work" Datatype="Bool">
+                           </Member>
+                        </Member>
+                     </Member>
+                  </Member>
+               </Section>
+            </Sections>
+         </Interface>
+      </AttributeList>
+   </SW.Blocks.GlobalDB>
+</Document>
