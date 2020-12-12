@@ -6,6 +6,7 @@ namespace XMLSugar_Playground
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             var xml = new XMLSugar.XMLSugar();

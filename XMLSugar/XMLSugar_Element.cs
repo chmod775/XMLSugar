@@ -10,6 +10,8 @@ namespace XMLSugar
         public string Name;
         public string Value = null;
 
+        private AXMLSugar_Instance _instance = null;
+
         public List<XMLSugar_ElementAttribute> Attributes = new List<XMLSugar_ElementAttribute>();
 
         public XMLSugar_Element Parent = null;
@@ -129,6 +131,16 @@ namespace XMLSugar
                     throw new KeyNotFoundException();
                 }
             }
+
+            return ret;
+        }
+
+        public T Access<T>(string path, bool throwNotFound = false) where T : AXMLSugar_Instance, new()
+        {
+            T ret = new T();
+
+            var foundElement = this.Access(path, throwNotFound) ?? new XMLSugar_Element(ret.Example());
+            ret.FromElement(foundElement);
 
             return ret;
         }
