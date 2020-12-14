@@ -123,30 +123,7 @@ namespace XMLSugar
             return ret;
         }
 
-        private void GenerateWriter(XmlWriter writer, XMLSugar_Element element)
-        {
-            var namespc = element.Attributes.Where(t => t.Name == "xmlns");
-            if (namespc.Count() > 0)
-                writer.WriteStartElement(element.Name, namespc.First().Value);
-            else
-                writer.WriteStartElement(element.Name);
 
-            foreach (var attr in element.Attributes)
-            {
-                if (attr.Name != "xmlns")
-                    writer.WriteAttributeString(attr.Name, attr.Value);
-            }
-
-            foreach (var item in element.Childrens)
-            {
-                this.GenerateWriter(writer, item);
-            }
-
-            if (element.Value != null)
-                writer.WriteValue(element.Value);
-
-            writer.WriteEndElement();
-        }
 
         public void FromXML(string xml)
         {
@@ -178,7 +155,7 @@ namespace XMLSugar
 
                 using (var writer = XmlWriter.Create(sw, settings))
                 {
-                    this.GenerateWriter(writer, this.rootElement);
+                    this.rootElement.GenerateWriter(writer);
                 }
                 return sw.ToString();
             }

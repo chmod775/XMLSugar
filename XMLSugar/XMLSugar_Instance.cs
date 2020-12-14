@@ -4,9 +4,9 @@ using System.Text;
 
 namespace XMLSugar
 {
-    public abstract class AXMLSugar_Instance
+    public abstract class XMLSugar_Instance
     {
-        private XMLSugar_Element _element = null;
+        internal XMLSugar_Element _element = null;
 
         public abstract XMLSugar_Element Example();
 
