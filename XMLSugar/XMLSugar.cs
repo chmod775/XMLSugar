@@ -19,6 +19,8 @@ namespace XMLSugar
     {
         public XMLSugar_Element rootElement = null;
 
+        private static Dictionary<string, XMLSugar> cache = new Dictionary<string, XMLSugar>();
+
         public XMLSugar() { }
         public XMLSugar(string xml)
         {
@@ -27,9 +29,13 @@ namespace XMLSugar
 
         public static XMLSugar FromFile(string path)
         {
+            if (cache.ContainsKey(path))
+                return cache[path];
+
             var ret = new XMLSugar();
             if (!File.Exists(path)) return null;
             ret.LoadFromFile(path);
+            cache[path] = ret;
             return ret;
         }
 
@@ -160,11 +166,5 @@ namespace XMLSugar
                 return sw.ToString();
             }
         }
-
-        public XMLSugar_Element Access(string path) => this.rootElement.Access(path);
-        public List<XMLSugar_Element> AccessAll(string path) => this.rootElement.AccessAll(path);
-
-        public List<XMLSugar_Element> Find(string selector, bool deep = true) => this.rootElement.Find(selector, deep);
-        public XMLSugar_Element FindFirstOrNull(string selector, bool deep = false) => this.rootElement.FindFirstOrNull(selector, deep);
     }
 }

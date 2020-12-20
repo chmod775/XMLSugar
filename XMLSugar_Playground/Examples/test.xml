@@ -82,53 +82,6 @@
           </MultilingualText>
         </ObjectList>
       </SW.WatchAndForceTables.PlcTableCommentEntry>
-      <SW.WatchAndForceTables.PlcWatchTableEntry ID="F" CompositionName="Entries">
-        <AttributeList>
-          <Address ReadOnly="true">%I2001.0</Address>
-          <DisplayFormat>Bool</DisplayFormat>
-          <ModifyIntention ReadOnly="true">false</ModifyIntention>
-          <ModifyTrigger>Permanent</ModifyTrigger>
-          <ModifyValue />
-          <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name>Hello world</Name>
-        </AttributeList>
-        <ObjectList>
-          <MultilingualText ID="10" CompositionName="Comment">
-            <ObjectList>
-              <MultilingualTextItem ID="11" CompositionName="Items">
-                <AttributeList>
-                  <Culture>en-US</Culture>
-                  <Text />
-                </AttributeList>
-              </MultilingualTextItem>
-              <MultilingualTextItem ID="12" CompositionName="Items">
-                <AttributeList>
-                  <Culture>it-IT</Culture>
-                  <Text />
-                </AttributeList>
-              </MultilingualTextItem>
-              <MultilingualTextItem ID="13" CompositionName="Items">
-                <AttributeList>
-                  <Culture>de-DE</Culture>
-                  <Text />
-                </AttributeList>
-              </MultilingualTextItem>
-              <MultilingualTextItem ID="14" CompositionName="Items">
-                <AttributeList>
-                  <Culture>fr-FR</Culture>
-                  <Text />
-                </AttributeList>
-              </MultilingualTextItem>
-              <MultilingualTextItem ID="15" CompositionName="Items">
-                <AttributeList>
-                  <Culture>es-ES</Culture>
-                  <Text />
-                </AttributeList>
-              </MultilingualTextItem>
-            </ObjectList>
-          </MultilingualText>
-        </ObjectList>
-      </SW.WatchAndForceTables.PlcWatchTableEntry>
       <SW.WatchAndForceTables.PlcWatchTableEntry ID="16" CompositionName="Entries">
         <AttributeList>
           <Address ReadOnly="true">%I2000.1</Address>
@@ -6325,7 +6278,7 @@
           <ModifyTrigger ReadOnly="true">Undef</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger ReadOnly="true">Undef</MonitorTrigger>
-          <Name />
+          <Name></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="3BA" CompositionName="Comment">
@@ -6372,7 +6325,7 @@
           <ModifyTrigger ReadOnly="true">Undef</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger ReadOnly="true">Undef</MonitorTrigger>
-          <Name />
+          <Name></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="3C1" CompositionName="Comment">
@@ -6419,7 +6372,7 @@
           <ModifyTrigger ReadOnly="true">Undef</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger ReadOnly="true">Undef</MonitorTrigger>
-          <Name />
+          <Name></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="3C8" CompositionName="Comment">
@@ -6466,7 +6419,7 @@
           <ModifyTrigger ReadOnly="true">Undef</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger ReadOnly="true">Undef</MonitorTrigger>
-          <Name />
+          <Name></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="3CF" CompositionName="Comment">
@@ -6513,7 +6466,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue>16#FF</ModifyValue>
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="3D6" CompositionName="Comment">
@@ -9568,7 +9521,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="59D" CompositionName="Comment">
@@ -9615,7 +9568,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5A4" CompositionName="Comment">
@@ -9662,7 +9615,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5AB" CompositionName="Comment">
@@ -9709,7 +9662,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5B2" CompositionName="Comment">
@@ -9756,7 +9709,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5B9" CompositionName="Comment">
@@ -9803,7 +9756,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5C0" CompositionName="Comment">
@@ -9850,7 +9803,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5C7" CompositionName="Comment">
@@ -9897,7 +9850,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5CE" CompositionName="Comment">
@@ -9944,7 +9897,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue>FALSE</ModifyValue>
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5D5" CompositionName="Comment">
@@ -9991,7 +9944,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue>FALSE</ModifyValue>
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5DC" CompositionName="Comment">
@@ -10038,7 +9991,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5E3" CompositionName="Comment">
@@ -10085,7 +10038,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5EA" CompositionName="Comment">
@@ -10132,7 +10085,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5F1" CompositionName="Comment">
@@ -10179,7 +10132,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5F8" CompositionName="Comment">
@@ -10226,7 +10179,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="5FF" CompositionName="Comment">
@@ -10273,7 +10226,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="606" CompositionName="Comment">
@@ -10320,7 +10273,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="60D" CompositionName="Comment">
@@ -10367,7 +10320,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="614" CompositionName="Comment">
@@ -10414,7 +10367,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="61B" CompositionName="Comment">
@@ -10461,7 +10414,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="622" CompositionName="Comment">
@@ -10508,7 +10461,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="629" CompositionName="Comment">
@@ -10555,7 +10508,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="630" CompositionName="Comment">
@@ -10602,7 +10555,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="637" CompositionName="Comment">
@@ -10649,7 +10602,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="63E" CompositionName="Comment">
@@ -10696,7 +10649,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="645" CompositionName="Comment">
@@ -10743,7 +10696,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="64C" CompositionName="Comment">
@@ -10790,7 +10743,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="653" CompositionName="Comment">
@@ -10837,7 +10790,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="65A" CompositionName="Comment">
@@ -10884,7 +10837,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="661" CompositionName="Comment">
@@ -10931,7 +10884,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue>32000</ModifyValue>
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name ReadOnly="true" />
+          <Name ReadOnly="true"></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="668" CompositionName="Comment">
@@ -10978,7 +10931,7 @@
           <ModifyTrigger ReadOnly="true">Undef</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger ReadOnly="true">Undef</MonitorTrigger>
-          <Name />
+          <Name></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="66F" CompositionName="Comment">
@@ -11025,7 +10978,7 @@
           <ModifyTrigger ReadOnly="true">Undef</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger ReadOnly="true">Undef</MonitorTrigger>
-          <Name />
+          <Name></Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="676" CompositionName="Comment">
@@ -11345,17 +11298,6 @@
             </ObjectList>
           </MultilingualText>
         </ObjectList>
-      </SW.WatchAndForceTables.PlcWatchTableEntry>
-      <SW.WatchAndForceTables.PlcWatchTableEntry ID="775" CompositionName="Entries">
-        <AttributeList>
-          <Address ReadOnly="true">M77.5</Address>
-          <DisplayFormat>Bool</DisplayFormat>
-          <ModifyIntention ReadOnly="true">false</ModifyIntention>
-          <ModifyTrigger>Permanent</ModifyTrigger>
-          <ModifyValue />
-          <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name>Prova</Name>
-        </AttributeList>
       </SW.WatchAndForceTables.PlcWatchTableEntry>
     </ObjectList>
   </SW.WatchAndForceTables.PlcWatchTable>

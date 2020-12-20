@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using XMLSugar;
 
 namespace XMLSugar_Playground
@@ -9,7 +10,7 @@ namespace XMLSugar_Playground
     {
         public class TIAXML_WatchTable_Item : XMLSugar_Instance
         {
-            public string ID;
+            public int ID;
             public string name;
             public string datatype;
             public string address;
@@ -30,16 +31,16 @@ namespace XMLSugar_Playground
 
             public override void FromElement(XMLSugar_Element element)
             {
-                this.ID = element.GetAttributeValue("ID");
+                this.ID = int.Parse(element.GetAttributeValue("ID"), System.Globalization.NumberStyles.HexNumber);
 
-                this.name = element.Access("AttributeList/Name").GetValue();
+                this.name = element.Access("AttributeList/Name").GetValue() ?? "";
                 this.datatype = element.Access("AttributeList/DisplayFormat").GetValue();
                 this.address = element.Access("AttributeList/Address").GetValue();
             }
 
             public override void ToElement(XMLSugar_Element element)
             {
-                element.SetAttributeValue("ID", this.ID);
+                element.SetAttributeValue("ID", this.ID.ToString("X"));
 
                 element.Access("AttributeList/Name").SetValue(this.name);
                 element.Access("AttributeList/DisplayFormat").SetValue(this.datatype);
@@ -47,56 +48,112 @@ namespace XMLSugar_Playground
             }
         }
 
+        
+        public class TIAXML_DBMember_Item : XMLSugar_Instance
+        {
+            public string name;
+            public string datatype;
+
+            public IList<TIAXML_DBMember_Item> Childrens;
+
+            public TIAXML_DBMember_Item() { }
+
+            public TIAXML_DBMember_Item(TIAXML_DBMember_Item src)
+            {
+                this.name = src.name;
+                this.datatype = src.datatype;
+
+                this.Childrens = new List<TIAXML_DBMember_Item>();
+                foreach (var item in src.Childrens)
+                    this.Childrens.Add(new TIAXML_DBMember_Item(item));
+            }
+
+            public override XMLSugar_Element Example() => new XMLSugar.XMLSugar(@"
+    <Member Name=""Home"" Datatype=""Bool"">
+    </Member>
+").rootElement;
+
+            public override void FromElement(XMLSugar_Element element)
+            {
+                this.Childrens = element.AccessCollection<TIAXML_DBMember_Item>("", "Member");
+
+                this.name = element.GetAttributeValue("Name");
+                this.datatype = element.GetAttributeValue("Datatype");
+            }
+
+            public override void ToElement(XMLSugar_Element element)
+            {
+                element.SetAttributeValue("Name", this.name);
+                element.SetAttributeValue("Datatype", this.datatype);
+            }
+        }
+
+
+        public class DeveloperScope
+        {
+            private Dictionary<string, object> scope = new Dictionary<string, object>();
+            public object this[string key]
+            {
+                get => this.scope[key];
+                set { this.scope[key] = value; }
+            }
+        }
+
+
         static void Main(string[] args)
         {
+            /*
+            var devWatchTable = new WatchTable_Developer<TIAXML_WatchTable_Worker>();
+
+            devWatchTable.RemoveSymbol("\"SQ84/BA\"");
+
+            devWatchTable.AddSymbol("HelloWorld", "TEST", "M776.0");
+
+            devWatchTable.Generate();
+            */
+            /*
+            var scope = new DeveloperScope();
+            scope["abc"] = "abc";
+            */
+
             var xml = new XMLSugar.XMLSugar();
             xml.LoadFromFile(@"C:\Users\miche\source\repos\XMLSugar\XMLSugar_Playground\Examples\IO_ST_A.xml");
 
-            var inst1 = xml.rootElement.AccessSingle<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList/SW.WatchAndForceTables.PlcWatchTableEntry[ID=8]");
+            var inst1 = xml.rootElement.Materialize<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList/SW.WatchAndForceTables.PlcWatchTableEntry[ID=8]");
 
-            var inst3 = xml.rootElement.AccessSingle<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList/SW.WatchAndForceTables.PlcWatchTableEntry[ID=F]");
+            var inst3 = xml.rootElement.Materialize<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList/SW.WatchAndForceTables.PlcWatchTableEntry[ID=F]");
             inst3.name = "Hello world";
 
-            var coll1 = xml.rootElement.AccessCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
+            var test = xml.rootElement.FindFirstOrNull("Name[Value=\"SQ57/BA\"]").Materialize<TIAXML_WatchTable_Item>();
 
-            coll1.Add(new TIAXML_WatchTable_Item()
-            {
-                name = "Prova",
-                address = "M77.5",
-                datatype = "Bool",
-                ID = "775"
-            });
+            var childrens = xml.rootElement.AccessCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
 
-            coll1.Remove(inst1);
 
-            //var inst2 = elem1.CreateInside<TIAXML_WatchTable_Item>();
-            //inst2.ID = 775;
-            //inst2.name = "New";
+            childrens.Remove(inst1);
 
-            //var item1 = xml.Access("SW.WatchAndForceTables.PlcWatchTable/AttributeList/Name");
-            //var items = xml.AccessAll("SW.WatchAndForceTables.PlcWatchTable/ObjectList/SW.WatchAndForceTables.PlcWatchTableEntry");
+            var childrens2 = xml.rootElement.AccessCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
 
-            /*
-            //var item1 = xml.Access("SW.Blocks.GlobalDB/AttributeList/Interface/Sections/Section[Name=Static]");
-            var item1 = xml.FindFirstOrNull("Section[Name=Static]", true);
+            childrens2.Remove(inst3);
 
-            //var memberBool = item1.Access("Member[Name=ACTUATORS]/Member[Name=EV]/Member[Name=LimitSwitches]/Member[Name=Home]");
-            var memberBool = item1.FindFirstOrNull("Member[Name=Home]", true);
+            var aa = childrens[0].name;
 
-            item1.Clear();
-
-            var names = new List<string>() { "Y1", "Y2A", "Y2B", "Y3" };
-            foreach (var item in names)
-            {
-                var newMember = new XMLSugar.XMLSugar_Element(memberBool);
-                newMember.SetAttributeValue("Name", item);
-                item1.InsertInside(newMember);
-            }
-
-            var xml_str = xml.ToXML();
-            */
             xml.SaveToFile(@"C:\Users\miche\source\repos\XMLSugar\XMLSugar_Playground\Examples\test.xml");
+            /*
+            var xml2 = XMLSugar.XMLSugar.FromFile(@"C:\Users\miche\source\repos\XMLSugar\XMLSugar_Playground\Examples\PROAUTOMATOR_GLOBAL.xml");
 
+            var coll10 = xml2.rootElement.AccessCollection<TIAXML_DBMember_Item>("SW.Blocks.GlobalDB/AttributeList/Interface/Sections/Section[Name=Static]", "Member");
+
+            var actuators = coll10[0];
+            var ev = actuators.Childrens[0];
+            var ls = ev.Childrens[0];
+
+            ls.Childrens.Add(new TIAXML_DBMember_Item(ls.Childrens[0]));
+
+            ls.Childrens[0].name = "Pippo";
+
+
+            xml2.SaveToFile(@"C:\Users\miche\source\repos\XMLSugar\XMLSugar_Playground\Examples\test2.xml");
+            */
             Console.WriteLine("Done.");
             Console.WriteLine(Directory.GetCurrentDirectory());
 

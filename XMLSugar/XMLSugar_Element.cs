@@ -112,10 +112,17 @@ namespace XMLSugar
             {
                 foreach (var item in queriesDictionary)
                 {
-                    if (this.Attributes.Where(q => (q.Name == item.Key) && (q.Value == item.Value)).Count() == 0)
+                    if (item.Key.ToLower() == "value")
                     {
-                        ret = false;
-                        break;
+                        if (this.Value != item.Value)
+                            ret = false;
+                    } else
+                    {
+                        if (this.Attributes.Where(q => (q.Name == item.Key) && (q.Value == item.Value)).Count() == 0)
+                        {
+                            ret = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -126,48 +133,37 @@ namespace XMLSugar
         }
 
         #region Access
-        public XMLSugar_Element Access(string path, bool throwNotFound = false)
-        {
-            XMLSugar_Element ret = this;
-
-            var path_parts = path.Split('/');
-            foreach (var path_item in path_parts)
-            {
-                ret = ret.FindFirstOrNull(path_item);
-                if (ret == null)
-                {
-                    if (!throwNotFound)
-                        return null;
-                    throw new KeyNotFoundException();
-                }
-            }
-
-            return ret;
-        }
-        public List<XMLSugar_Element> AccessAll(string path, bool throwNotFound = false)
+        public List<XMLSugar_Element> Access(string path)
         {
             XMLSugar_Element self = this;
 
             var path_parts = path.Split('/');
+            if (path_parts.Length == 0) return new List<XMLSugar_Element>() { self };
+
             foreach (var path_item in path_parts)
             {
                 self = self.FindFirstOrNull(path_item);
                 if (self == null)
-                {
-                    if (!throwNotFound)
-                        return new List<XMLSugar_Element>();
-                    throw new KeyNotFoundException();
-                }
+                    return new List<XMLSugar_Element>();
             }
 
             return self.Parent.Find(path_parts.Last());
         }
 
-        public T AccessSingle<T>() where T : XMLSugar_Instance, new()
+        public XMLSugar_Element AccessFirstOrNull(string path)
+        {
+            var results = this.Access(path);
+            if (results.Count() == 0)
+                return null;
+            return results.First();
+        }
+
+
+        public T Materialize<T>(string path = "") where T : XMLSugar_Instance, new()
         {
             T ret = new T();
 
-            var foundElement = this ?? new XMLSugar_Element(ret.Example());
+            var foundElement = this.AccessFirstOrNull(path) ?? new XMLSugar_Element(ret.Example());
             if (foundElement._link.Collection != null) throw new Exception("Element is already linked to a collection. Access using AccessCollection.");
             if (foundElement._link.Single != null) return (T)foundElement._link.Single;
 
@@ -180,34 +176,17 @@ namespace XMLSugar
             return ret;
         }
 
-        public T AccessSingle<T>(string path, bool throwNotFound = false) where T : XMLSugar_Instance, new()
-        {
-            T ret = new T();
-
-            var foundElement = this.Access(path, throwNotFound) ?? new XMLSugar_Element(ret.Example());
-            if (foundElement._link.Collection != null) throw new Exception("Element is already linked to a collection. Access using AccessCollection.");
-            if (foundElement._link.Single != null) return (T)foundElement._link.Single;
-
-            ret._element = foundElement;
-
-            ret.FromElement(foundElement);
-
-            foundElement._link.Single = ret;
-
-            return ret;
-        }
-
-        public List<T> AccessCollection<T>(string path, string selector, bool throwNotFound = false) where T : XMLSugar_Instance, new()
+        public IList<T> AccessCollection<T>(string path, string selector) where T : XMLSugar_Instance, new()
         {
             var ret = new List<T>();
 
-            var collectionElement = this.Access(path, throwNotFound);
+            var collectionElement = this.AccessFirstOrNull(path);
             if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
             if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
 
             collectionElement._link.Collection = collectionElement._link.Collection ?? new Dictionary<Type, IList>();
             if (collectionElement._link.Collection.ContainsKey(typeof(T)))
-                return collectionElement._link.Collection[typeof(T)] as List<T>;
+                return collectionElement._link.Collection[typeof(T)] as IList<T>;
 
             collectionElement._link.Collection[typeof(T)] = ret;
 
@@ -221,6 +200,14 @@ namespace XMLSugar
 
             return ret;
         }
+
+        public T Map<T>(Func<XMLSugar_Element, T> mapper) where T : XMLSugar_Instance, new()
+        {
+            var ret = mapper(this);
+            this._link.Single = ret;
+            return ret;
+        }
+
         #endregion
 
         #region Find
@@ -245,22 +232,17 @@ namespace XMLSugar
 
             return ret;
         }
-        public XMLSugar_Element FindFirstOrNull(string selector, bool deep = false, bool throwNotFound = false)
+        public XMLSugar_Element FindFirstOrNull(string selector, bool deep = false)
         {
             var results = this.Find(selector, deep);
             if (results.Count() == 0)
-            {
-                if (!throwNotFound)
                     return null;
-                throw new KeyNotFoundException();
-            }
-
             return results.First();
         }
         #endregion
 
         #region Create
-        public T CreateInside<T>() where T : XMLSugar_Instance, new()
+        public T CreateIstanceInside<T>() where T : XMLSugar_Instance, new()
         {
             T ret = new T();
 
@@ -274,7 +256,7 @@ namespace XMLSugar
 
             return ret;
         }
-        public XMLSugar_Element CreateInside(XMLSugar_Instance instance)
+        public XMLSugar_Element CreateElementInside(XMLSugar_Instance instance)
         {
             var ret = new XMLSugar_Element(instance.Example());
             ret._link.Single = instance;
@@ -388,7 +370,7 @@ namespace XMLSugar
             var newCollectionInstances = collectionInstances.Where(t => t != null).ToList();
             foreach (var item in newCollectionInstances)
             {
-                var newElementForIstance = this.CreateInside(item);
+                var newElementForIstance = this.CreateElementInside(item);
                 newElementForIstance.GenerateWriter(writer);
             }
 
