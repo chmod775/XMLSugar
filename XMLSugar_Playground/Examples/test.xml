@@ -184,7 +184,7 @@
           <ModifyTrigger>Permanent</ModifyTrigger>
           <ModifyValue />
           <MonitorTrigger>Permanent</MonitorTrigger>
-          <Name>"SQ57/BA"</Name>
+          <Name>Pippo</Name>
         </AttributeList>
         <ObjectList>
           <MultilingualText ID="25" CompositionName="Comment">

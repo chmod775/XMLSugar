@@ -33,18 +33,18 @@ namespace XMLSugar_Playground
             {
                 this.ID = int.Parse(element.GetAttributeValue("ID"), System.Globalization.NumberStyles.HexNumber);
 
-                this.name = element.Access("AttributeList/Name").GetValue() ?? "";
-                this.datatype = element.Access("AttributeList/DisplayFormat").GetValue();
-                this.address = element.Access("AttributeList/Address").GetValue();
+                this.name = element.AccessFirstOrNull("AttributeList/Name").GetValue() ?? "";
+                this.datatype = element.AccessFirstOrNull("AttributeList/DisplayFormat").GetValue();
+                this.address = element.AccessFirstOrNull("AttributeList/Address").GetValue();
             }
 
             public override void ToElement(XMLSugar_Element element)
             {
                 element.SetAttributeValue("ID", this.ID.ToString("X"));
 
-                element.Access("AttributeList/Name").SetValue(this.name);
-                element.Access("AttributeList/DisplayFormat").SetValue(this.datatype);
-                element.Access("AttributeList/Address").SetValue(this.address);
+                element.AccessFirstOrNull("AttributeList/Name").SetValue(this.name);
+                element.AccessFirstOrNull("AttributeList/DisplayFormat").SetValue(this.datatype);
+                element.AccessFirstOrNull("AttributeList/Address").SetValue(this.address);
             }
         }
 
@@ -124,14 +124,15 @@ namespace XMLSugar_Playground
             var inst3 = xml.rootElement.Materialize<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList/SW.WatchAndForceTables.PlcWatchTableEntry[ID=F]");
             inst3.name = "Hello world";
 
-            var test = xml.rootElement.FindFirstOrNull("Name[Value=\"SQ57/BA\"]").Materialize<TIAXML_WatchTable_Item>();
+            var test = xml.rootElement.FindFirstOrNull("Name[Value=\"SQ57/BA\"]", true).FindParent("SW.WatchAndForceTables.PlcWatchTableEntry").Materialize<TIAXML_WatchTable_Item>();
+            test.name = "Pippo";
 
-            var childrens = xml.rootElement.AccessCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
+            var childrens = xml.rootElement.MaterializeCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
 
 
             childrens.Remove(inst1);
 
-            var childrens2 = xml.rootElement.AccessCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
+            var childrens2 = xml.rootElement.MaterializeCollection<TIAXML_WatchTable_Item>("SW.WatchAndForceTables.PlcWatchTable/ObjectList", "SW.WatchAndForceTables.PlcWatchTableEntry");
 
             childrens2.Remove(inst3);
 

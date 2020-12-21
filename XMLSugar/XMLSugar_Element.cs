@@ -136,9 +136,9 @@ namespace XMLSugar
         public List<XMLSugar_Element> Access(string path)
         {
             XMLSugar_Element self = this;
+            if (path.Length == 0) return new List<XMLSugar_Element>() { self };
 
             var path_parts = path.Split('/');
-            if (path_parts.Length == 0) return new List<XMLSugar_Element>() { self };
 
             foreach (var path_item in path_parts)
             {
@@ -157,8 +157,54 @@ namespace XMLSugar
                 return null;
             return results.First();
         }
+        #endregion
 
+        #region Find
+        public List<XMLSugar_Element> Find(string selector, bool deep = true)
+        {
+            var ret = new List<XMLSugar_Element>();
 
+            // Deep search in childrens
+            if (deep)
+            {
+                if (this.Match(selector))
+                    ret.Add(this);
+
+                foreach (var item in this.Childrens)
+                    ret.AddRange(item.Find(selector, deep));
+            }
+            else
+            {
+                foreach (var item in this.Childrens)
+                    if (item.Match(selector))
+                        ret.Add(item);
+            }
+
+            return ret;
+        }
+        public XMLSugar_Element FindFirstOrNull(string selector, bool deep = false)
+        {
+            var results = this.Find(selector, deep);
+            if (results.Count() == 0)
+                return null;
+            return results.First();
+        }
+
+        public XMLSugar_Element FindParent(string selector)
+        {
+            var ret = this.Parent;
+            while (ret != null)
+            {
+                if (ret.Match(selector))
+                    return ret;
+                ret = ret.Parent;
+            }
+
+            return null;
+        }
+        #endregion
+
+        #region Materialize
         public T Materialize<T>(string path = "") where T : XMLSugar_Instance, new()
         {
             T ret = new T();
@@ -176,7 +222,7 @@ namespace XMLSugar
             return ret;
         }
 
-        public IList<T> AccessCollection<T>(string path, string selector) where T : XMLSugar_Instance, new()
+        public IList<T> MaterializeCollection<T>(string path, string selector) where T : XMLSugar_Instance, new()
         {
             var ret = new List<T>();
 
@@ -194,50 +240,20 @@ namespace XMLSugar
 
             foreach (var item in foundElements)
             {
-                T newItemIstance = item.AccessSingle<T>();
+                T newItemIstance = item.Materialize<T>();
                 ret.Add(newItemIstance);
             }
 
             return ret;
         }
+        #endregion
 
+        #region Map
         public T Map<T>(Func<XMLSugar_Element, T> mapper) where T : XMLSugar_Instance, new()
         {
             var ret = mapper(this);
             this._link.Single = ret;
             return ret;
-        }
-
-        #endregion
-
-        #region Find
-        public List<XMLSugar_Element> Find(string selector, bool deep = true)
-        {
-            var ret = new List<XMLSugar_Element>();
-
-            // Deep search in childrens
-            if (deep)
-            {
-                if (this.Match(selector))
-                    ret.Add(this);
-
-                foreach (var item in this.Childrens)
-                    ret.AddRange(item.Find(selector, deep));
-            } else
-            {
-                foreach (var item in this.Childrens)
-                    if (item.Match(selector))
-                        ret.Add(item);
-            }
-
-            return ret;
-        }
-        public XMLSugar_Element FindFirstOrNull(string selector, bool deep = false)
-        {
-            var results = this.Find(selector, deep);
-            if (results.Count() == 0)
-                    return null;
-            return results.First();
         }
         #endregion
 
