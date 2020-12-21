@@ -10,7 +10,7 @@ namespace XMLSugar
 
         public abstract XMLSugar_Element Example();
 
-        public abstract void FromElement(XMLSugar_Element element);
+        public abstract bool FromElement(XMLSugar_Element element);
         public abstract void ToElement(XMLSugar_Element element);
     }
 }

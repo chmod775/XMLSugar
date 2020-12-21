@@ -52,10 +52,17 @@ namespace XMLSugar
         public XMLSugar_Element SetAttributeValue(string attrName, string value)
         {
             var foundAttr = this.Attributes.Where(t => t.Name.ToLower() == attrName.ToLower());
-            if (foundAttr.Count() == 0) throw new Exception($"{attrName} attribute not found in element {this.Name}");
+            if (foundAttr.Count() == 0)
+            {
+                this.Attributes.Add(new XMLSugar_ElementAttribute()
+                {
+                    Name = attrName,
+                    Value = value
+                });
+                return this;
+            }
 
             foundAttr.First().Value = value;
-
             return this;
         }
         public string GetAttributeValue(string attrName)
@@ -215,7 +222,8 @@ namespace XMLSugar
 
             ret._element = foundElement;
 
-            ret.FromElement(foundElement);
+            var validElement = ret.FromElement(foundElement);
+            if (!validElement) return null;
 
             foundElement._link.Single = ret;
 
@@ -241,7 +249,8 @@ namespace XMLSugar
             foreach (var item in foundElements)
             {
                 T newItemIstance = item.Materialize<T>();
-                ret.Add(newItemIstance);
+                if (newItemIstance != null)
+                    ret.Add(newItemIstance);
             }
 
             return ret;
