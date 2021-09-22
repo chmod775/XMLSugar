@@ -230,7 +230,59 @@ namespace XMLSugar
             return ret;
         }
 
-        public IList<T> MaterializeCollection<T>(string path, string selector) where T : XMLSugar_Instance, new()
+        public IList<T> MaterializeCollection<T>(string path, string selector, bool immutable = false) where T : XMLSugar_Instance, new()
+        {
+            var ret = new List<T>();
+
+            var collectionElement = this.AccessFirstOrNull(path);
+            if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
+            if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
+
+            if (!immutable)
+            {
+                collectionElement._link.Collection = collectionElement._link.Collection ?? new Dictionary<Type, IList>();
+                if (collectionElement._link.Collection.ContainsKey(typeof(T)))
+                    return collectionElement._link.Collection[typeof(T)] as IList<T>;
+
+                collectionElement._link.Collection[typeof(T)] = ret;
+            }
+
+            var foundElements = collectionElement.Find(selector, false);
+
+            foreach (var item in foundElements)
+            {
+                T newItemIstance = item.Materialize<T>();
+                if (newItemIstance != null)
+                    ret.Add(newItemIstance);
+            }
+
+            return ret;
+        }
+
+        public IDictionary<string, string> MaterializeDictionary(string path, Func<string, bool> selector)
+        {
+            var ret = new Dictionary<string, string>();
+
+            var collectionElement = this.AccessFirstOrNull(path);
+            if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
+            if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
+
+
+
+            return ret;
+        }
+
+        #endregion
+
+        #region Map
+        public T Map<T>(Func<XMLSugar_Element, T> mapper) where T : XMLSugar_Instance, new()
+        {
+            var ret = mapper(this);
+            this._link.Single = ret;
+            return ret;
+        }
+
+        public IList<T> MapCollection<T>(string path, string selector, Func<XMLSugar_Element, T> mapper) where T : XMLSugar_Instance
         {
             var ret = new List<T>();
 
@@ -248,20 +300,11 @@ namespace XMLSugar
 
             foreach (var item in foundElements)
             {
-                T newItemIstance = item.Materialize<T>();
+                T newItemIstance = mapper(item);
                 if (newItemIstance != null)
                     ret.Add(newItemIstance);
             }
 
-            return ret;
-        }
-        #endregion
-
-        #region Map
-        public T Map<T>(Func<XMLSugar_Element, T> mapper) where T : XMLSugar_Instance, new()
-        {
-            var ret = mapper(this);
-            this._link.Single = ret;
             return ret;
         }
         #endregion
@@ -346,13 +389,6 @@ namespace XMLSugar
             if (this._link.Single != null)
                 this._link.Single.ToElement(this);
 
-            // Group all collection instances
-            List<XMLSugar_Instance> collectionInstances = new List<XMLSugar_Instance>();
-            if (this._link.Collection != null)
-                foreach (var typeItem in this._link.Collection)
-                    foreach (var instanceItem in typeItem.Value)
-                        collectionInstances.Add((XMLSugar_Instance)instanceItem);
-
             // Genearete attributes
             var namespc = this.Attributes.Where(t => t.Name == "xmlns");
             if (namespc.Count() > 0)
@@ -366,38 +402,54 @@ namespace XMLSugar
                     writer.WriteAttributeString(attr.Name, attr.Value);
             }
 
-            // Remove childrens not present in collection
-            this.Childrens.RemoveAll(t =>
-            {
-                if (t._link.Single == null) return false;
-                return !collectionInstances.Contains(t._link.Single);
-            });
 
-            foreach (var item in this.Childrens)
+            // Group all collection instances
+            List<XMLSugar_Instance> collectionInstances = new List<XMLSugar_Instance>();
+            if (this._link.Collection != null)
             {
-                if (item._link.Single == null)
+                foreach (var typeItem in this._link.Collection)
+                    foreach (var instanceItem in typeItem.Value)
+                        collectionInstances.Add((XMLSugar_Instance)instanceItem);
+
+                // Remove childrens not present in collection
+                this.Childrens.RemoveAll(t =>
+                {
+                    if (t._link.Single == null) return false;
+                    return !collectionInstances.Contains(t._link.Single);
+                });
+
+                foreach (var item in this.Childrens)
+                {
+
+                    if (item._link.Single != null)
+                    {
+                        var foundCollectionIdx = collectionInstances.IndexOf(item._link.Single);
+                        if (foundCollectionIdx > -1)
+                        {
+                            item.GenerateWriter(writer);
+                            item._link.Single.ToElement(item);
+                            collectionInstances[foundCollectionIdx] = null; // Flag instance as already processed
+                        }
+                        else
+                            throw new TimeZoneNotFoundException();
+                    }
+                }
+
+                // Add new instances present in collection to childrens
+                var newCollectionInstances = collectionInstances.Where(t => t != null).ToList();
+                foreach (var item in newCollectionInstances)
+                {
+                    var newElementForIstance = this.CreateElementInside(item);
+                    newElementForIstance.GenerateWriter(writer);
+                }
+            } else
+            {
+                foreach (var item in this.Childrens)
                 {
                     item.GenerateWriter(writer);
-                } else
-                {
-                    var foundCollectionIdx = collectionInstances.IndexOf(item._link.Single);
-                    if (foundCollectionIdx > -1)
-                    {
-                        item.GenerateWriter(writer);
-                        item._link.Single.ToElement(item);
-                        collectionInstances[foundCollectionIdx] = null; // Flag instance as already processed
-                    } else
-                        throw new TimeZoneNotFoundException();
                 }
             }
 
-            // Add new instances present in collection to childrens
-            var newCollectionInstances = collectionInstances.Where(t => t != null).ToList();
-            foreach (var item in newCollectionInstances)
-            {
-                var newElementForIstance = this.CreateElementInside(item);
-                newElementForIstance.GenerateWriter(writer);
-            }
 
             if (this.Value != null)
                 writer.WriteValue(this.Value);
