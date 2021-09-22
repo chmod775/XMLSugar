@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -39,6 +40,146 @@ namespace XMLSugar
             foreach (var item in src.Childrens)
                 this.Childrens.Add(new XMLSugar_Element(item));
         }
+
+        #region File
+        private static Dictionary<string, XMLSugar_Element> cache = new Dictionary<string, XMLSugar_Element>();
+
+        public static XMLSugar_Element FromFile(string path)
+        {
+            if (cache.ContainsKey(path))
+                return cache[path];
+
+            XMLSugar_Element ret = null;
+            if (!File.Exists(path)) return null;
+
+            using (StreamReader r = new StreamReader(path))
+            {
+                string xmlraw = r.ReadToEnd();
+                ret = XMLSugar_Element.FromXML(xmlraw);
+            }
+
+            if (ret == null) throw new Exception($"Cannot load file {path}");
+
+            cache[path] = ret;
+            return ret;
+        }
+
+        public void ToFile(string path)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            using (StreamWriter w = new StreamWriter(path, false))
+            {
+                w.Write(this.ToXML());
+            }
+        }
+        #endregion
+
+        #region XML
+        public static XMLSugar_Element FromXML(string xml)
+        {
+            using (var sr = new StringReader(xml))
+            {
+                var _xmlReaderSettings = new XmlReaderSettings();
+                _xmlReaderSettings.IgnoreComments = true;
+                _xmlReaderSettings.IgnoreWhitespace = true;
+                _xmlReaderSettings.IgnoreProcessingInstructions = true;
+
+                var _xmlReader = XmlReader.Create(sr, _xmlReaderSettings);
+
+                _xmlReader.Read();
+                if (_xmlReader.NodeType == XmlNodeType.XmlDeclaration)
+                    XMLSugar_Element.ParseNext(_xmlReader, XmlNodeType.XmlDeclaration);
+
+                return XMLSugar_Element.ParseReader(_xmlReader);
+            }
+        }
+
+        public string ToXML()
+        {
+            using (var sw = new StringWriterUTF8())
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.Encoding = Encoding.UTF8;
+
+                using (var writer = XmlWriter.Create(sw, settings))
+                {
+                    this.GenerateWriter(writer);
+                }
+                return sw.ToString();
+            }
+        }
+        #endregion
+
+
+        #region Parser
+        private static bool ParseNext(XmlReader reader, XmlNodeType expectedType)
+        {
+            var ret = true;
+
+            if (reader.NodeType != XmlNodeType.None)
+            {
+                if (reader.NodeType != expectedType)
+                    ret = false;
+                reader.Read();
+
+                if (!ret)
+                    throw new Exception("Expected node not matching");
+            }
+
+            return ret;
+        }
+
+        private static XMLSugar_Element ParseReader(XmlReader reader, XMLSugar_Element parentElement = null)
+        {
+            XMLSugar_Element ret = new XMLSugar_Element(reader.Name);
+
+            ret.Value = null;
+
+            ret.Parent = parentElement;
+
+            var isEmpty = reader.IsEmptyElement;
+
+            // Read attributes
+            if (reader.AttributeCount > 0)
+            {
+                while (reader.MoveToNextAttribute())
+                {
+                    var newAttr = new XMLSugar_ElementAttribute()
+                    {
+                        Name = reader.Name,
+                        Value = reader.Value
+                    };
+                    ret.Attributes.Add(newAttr);
+                }
+                reader.MoveToElement();
+            }
+
+            XMLSugar_Element.ParseNext(reader, XmlNodeType.Element);
+
+            if (isEmpty)
+                return ret;
+
+            while (reader.NodeType == XmlNodeType.Element)
+            {
+                var childrenElement = XMLSugar_Element.ParseReader(reader, ret);
+                if (childrenElement == null) break;
+                ret.Childrens.Add(childrenElement);
+            }
+
+            if (reader.NodeType == XmlNodeType.Text)
+            {
+                ret.Value = reader.Value;
+                XMLSugar_Element.ParseNext(reader, XmlNodeType.Text);
+            }
+
+            XMLSugar_Element.ParseNext(reader, XmlNodeType.EndElement);
+
+            return ret;
+        }
+        #endregion
+
+
 
         #region Setters and Getters
         public XMLSugar_Element SetName(string name) { this.Name = name; return this; }
@@ -212,11 +353,13 @@ namespace XMLSugar
         #endregion
 
         #region Materialize
+        public static T MaterializeFile<T>(string path) where T : XMLSugar_Instance, new() =>  XMLSugar_Element.FromFile(path).Materialize<T>();
+
         public T Materialize<T>(string path = "") where T : XMLSugar_Instance, new()
         {
             T ret = new T();
 
-            var foundElement = this.AccessFirstOrNull(path) ?? new XMLSugar_Element(ret.Example());
+            var foundElement = this.AccessFirstOrNull(path) ?? (ret.Example());
             if (foundElement._link.Collection != null) throw new Exception("Element is already linked to a collection. Access using AccessCollection.");
             if (foundElement._link.Single != null) return (T)foundElement._link.Single;
 
@@ -314,7 +457,7 @@ namespace XMLSugar
         {
             T ret = new T();
 
-            var newElement = new XMLSugar_Element(ret.Example());
+            var newElement = (ret.Example());
             ret._element = newElement;
             ret.FromElement(newElement);
 
@@ -326,7 +469,7 @@ namespace XMLSugar
         }
         public XMLSugar_Element CreateElementInside(XMLSugar_Instance instance)
         {
-            var ret = new XMLSugar_Element(instance.Example());
+            var ret = (instance.Example());
             ret._link.Single = instance;
             instance.ToElement(ret);
 
