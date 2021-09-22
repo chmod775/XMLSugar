@@ -212,6 +212,11 @@ namespace XMLSugar
             if (foundAttr.Count() == 0) throw new Exception($"{attrName} attribute not found in element {this.Name}");
             return foundAttr.First().Value;
         }
+        public bool HasAttribute(string attrName)
+        {
+            var foundAttr = this.Attributes.Where(t => t.Name.ToLower() == attrName.ToLower());
+            return foundAttr.Count() > 0;
+        }
         #endregion
 
         public string Print(int level = 0)
@@ -469,7 +474,7 @@ namespace XMLSugar
         }
         public XMLSugar_Element CreateElementInside(XMLSugar_Instance instance)
         {
-            var ret = (instance.Example());
+            var ret = instance._element ?? instance.Example();
             ret._link.Single = instance;
             instance.ToElement(ret);
 
