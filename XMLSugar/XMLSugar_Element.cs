@@ -44,10 +44,11 @@ namespace XMLSugar
         #region File
         private static Dictionary<string, XMLSugar_Element> cache = new Dictionary<string, XMLSugar_Element>();
 
-        public static XMLSugar_Element FromFile(string path)
+        public static XMLSugar_Element FromFile(string path, bool ignoreCache = false)
         {
-            if (cache.ContainsKey(path))
-                return cache[path];
+            if (!ignoreCache)
+                if (cache.ContainsKey(path))
+                    return cache[path];
 
             XMLSugar_Element ret = null;
             if (!File.Exists(path)) return null;
@@ -357,8 +358,23 @@ namespace XMLSugar
         }
         #endregion
 
+
         #region Materialize
-        public static T MaterializeFile<T>(string path) where T : XMLSugar_Instance, new() =>  XMLSugar_Element.FromFile(path).Materialize<T>();
+        public static T MaterializeFile<T>(string path, bool ignoreCache = false) where T : XMLSugar_Instance, new() =>  XMLSugar_Element.FromFile(path, ignoreCache).Materialize<T>();
+
+        public static bool Materialize<T>(T dest) where T : XMLSugar_Instance, new()
+        {
+            var foundElement = dest._element ?? (dest.Example());
+            if (foundElement == null) throw new Exception("Element not defined");
+
+            dest._element = foundElement;
+
+            var validElement = dest.FromElement(dest._element);
+            if (!validElement) return false;
+
+            foundElement._link.Single = dest;
+            return true;
+        }
 
         public T Materialize<T>(string path = "") where T : XMLSugar_Instance, new()
         {
@@ -370,11 +386,7 @@ namespace XMLSugar
 
             ret._element = foundElement;
 
-            var validElement = ret.FromElement(foundElement);
-            if (!validElement) return null;
-
-            foundElement._link.Single = ret;
-
+            if (!Materialize<T>(ret)) return null;
             return ret;
         }
 

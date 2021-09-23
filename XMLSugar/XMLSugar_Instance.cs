@@ -6,14 +6,20 @@ namespace XMLSugar
 {
     public abstract class XMLSugar_Instance
     {
-        internal XMLSugar_Element _element = null;
+        public XMLSugar_Element _element = null;
 
         public abstract XMLSugar_Element Example();
 
         public abstract bool FromElement(XMLSugar_Element element);
         public abstract void ToElement(XMLSugar_Element element);
 
-        public string ToXML() => this._element.ToXML();
+        public void ToFile(string path) => this._element.ToFile(path);
+
+        public string ToXML()
+        {
+            this._element = this._element ?? this.Example();
+            return this._element.ToXML();
+        }
 
         public static T FromExample<T>() where T : XMLSugar_Instance, new()
         {
