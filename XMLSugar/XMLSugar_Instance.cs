@@ -15,10 +15,16 @@ namespace XMLSugar
 
         public void ToFile(string path) => this._element.ToFile(path);
 
-        public string ToXML()
+        public XMLSugar_Element GetElement()
         {
             this._element = this._element ?? this.Example();
-            return this._element.ToXML();
+            this.ToElement(this._element);
+            return this._element;
+        }
+
+        public string ToXML()
+        {
+            return this.GetElement().ToXML();
         }
 
         public static T FromExample<T>() where T : XMLSugar_Instance, new()
@@ -26,6 +32,11 @@ namespace XMLSugar
             var ret = new T();
             var elem = (ret.Example());
             return elem.Materialize<T>();
+        }
+
+        public T Clone<T>() where T : XMLSugar_Instance, new()
+        {
+            return XMLSugar_Element.FromXML(this.ToXML()).Materialize<T>();
         }
     }
 }
