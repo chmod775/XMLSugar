@@ -232,6 +232,8 @@ namespace XMLSugar
 
         private bool Match(string selector)
         {
+            if (selector == "") return true;
+
             var ret = true;
 
             var idx_Start = selector.IndexOf("#");
@@ -443,7 +445,7 @@ namespace XMLSugar
             return ret;
         }
 
-        public IList<T> MapCollection<T>(string path, string selector, Func<XMLSugar_Element, T> mapper) where T : XMLSugar_Instance
+        public IList<T> MapCollection<T>(string path, string selector, Func<XMLSugar_Element, T> mapper, bool immutable = false) where T : XMLSugar_Instance
         {
             var ret = new List<T>();
 
@@ -451,11 +453,14 @@ namespace XMLSugar
             if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
             if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
 
-            collectionElement._link.Collection = collectionElement._link.Collection ?? new Dictionary<Type, IList>();
-            if (collectionElement._link.Collection.ContainsKey(typeof(T)))
-                return collectionElement._link.Collection[typeof(T)] as IList<T>;
+            if (!immutable)
+            {
+                collectionElement._link.Collection = collectionElement._link.Collection ?? new Dictionary<Type, IList>();
+                if (collectionElement._link.Collection.ContainsKey(typeof(T)))
+                    return collectionElement._link.Collection[typeof(T)] as IList<T>;
 
-            collectionElement._link.Collection[typeof(T)] = ret;
+                collectionElement._link.Collection[typeof(T)] = ret;
+            }
 
             var foundElements = collectionElement.Find(selector, false);
 
@@ -609,10 +614,21 @@ namespace XMLSugar
                     }
                 */
 
+                foreach (var item in collectionInstances)
+                {
+                    if ((item._element != null) ? (item._element.Parent != this) : true)
+                    {
+                        var newElementForIstance = this.CreateElementInside(item);
+                        newElementForIstance.GenerateWriter(writer);
+                    } else
+                    {
+                        item._element.GenerateWriter(writer);
+                        item.ToElement(item._element);
+                    }
+                }
 
 
-
-                
+                /*
                 foreach (var item in this.Childrens)
                 {
 
@@ -640,6 +656,7 @@ namespace XMLSugar
                     var newElementForIstance = this.CreateElementInside(item);
                     newElementForIstance.GenerateWriter(writer);
                 }
+                */
             }
             else
             {
