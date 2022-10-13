@@ -387,6 +387,10 @@ namespace XMLSugar
             if (foundElement._link.Collection != null) throw new Exception("Element is already linked to a collection. Access using AccessCollection.");
             if (foundElement._link.Single != null) return (T)foundElement._link.Single;
 
+            var created = ret.Create(foundElement);
+            if (created != null)
+                ret = (T)created;
+
             ret._element = foundElement;
 
             if (!Materialize<T>(ret)) return null;
@@ -399,7 +403,7 @@ namespace XMLSugar
 
             var collectionElement = this.AccessFirstOrNull(path);
             if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
-            if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
+            if (collectionElement._link.Single != null) throw new Exception($"Element {selector} at {path} is already linked to as single. Access using AccessSingle.");
 
             if (!immutable)
             {

@@ -8,6 +8,11 @@ namespace XMLSugar
     {
         public XMLSugar_Element _element = null;
 
+        public virtual XMLSugar_Instance Create(XMLSugar_Element element)
+        {
+            return null;
+        }
+
         public abstract XMLSugar_Element Example();
 
         public abstract bool FromElement(XMLSugar_Element element);
