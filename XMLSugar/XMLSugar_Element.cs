@@ -288,6 +288,13 @@ namespace XMLSugar
 
             return ret;
         }
+        private bool Match(string[] selectors)
+        {
+            foreach (var selector in selectors)
+                if (this.Match(selector)) return true;
+            return false;
+        }
+
 
         #region Access
         public List<XMLSugar_Element> Access(string path)
@@ -339,6 +346,30 @@ namespace XMLSugar
 
             return ret;
         }
+
+        public List<XMLSugar_Element> Find(string[] selectors, bool deep = true)
+        {
+            var ret = new List<XMLSugar_Element>();
+
+            // Deep search in childrens
+            if (deep)
+            {
+                if (this.Match(selectors))
+                    ret.Add(this);
+
+                foreach (var item in this.Childrens)
+                    ret.AddRange(item.Find(selectors, deep));
+            }
+            else
+            {
+                foreach (var item in this.Childrens)
+                    if (item.Match(selectors))
+                        ret.Add(item);
+            }
+
+            return ret;
+        }
+
         public XMLSugar_Element FindFirstOrNull(string selector, bool deep = false)
         {
             var results = this.Find(selector, deep);
@@ -477,6 +508,35 @@ namespace XMLSugar
 
             return ret;
         }
+
+        public IList<T> MapCollection<T>(string path, string[] selectors, Func<XMLSugar_Element, T> mapper, bool immutable = false) where T : XMLSugar_Instance
+        {
+            var ret = new List<T>();
+
+            var collectionElement = this.AccessFirstOrNull(path);
+            if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
+            if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
+
+            if (!immutable)
+            {
+                collectionElement._link.Collection = collectionElement._link.Collection ?? new Dictionary<Type, IList>();
+                if (collectionElement._link.Collection.ContainsKey(typeof(T)))
+                    return collectionElement._link.Collection[typeof(T)] as IList<T>;
+
+                collectionElement._link.Collection[typeof(T)] = ret;
+            }
+
+            var foundElements = collectionElement.Find(selectors, false);
+
+            foreach (var item in foundElements)
+            {
+                T newItemIstance = mapper(item);
+                if (newItemIstance != null)
+                    ret.Add(newItemIstance);
+            }
+
+            return ret;
+        }
         #endregion
 
         #region Create
@@ -594,29 +654,6 @@ namespace XMLSugar
                     return !collectionInstances.Contains(t._link.Single);
                 });
 
-                /*
-                foreach (var item in this.Childrens)
-                {
-                    if (item._link.Single == null) item.GenerateWriter(writer);
-                }
-
-
-                foreach (var typeItem in this._link.Collection)
-                    foreach (var instanceItem in typeItem.Value)
-                    {
-                        var item = instanceItem as XMLSugar_Instance;
-                        if (item._element != null)
-                        {
-                            item._element._link.Single.ToElement(item._element);
-                            item._element.GenerateWriter(writer);
-                        }
-                        else
-                        {
-                            var newElementForIstance = this.CreateElementInside(item);
-                            newElementForIstance.GenerateWriter(writer);
-                        }
-                    }
-                */
 
                 foreach (var item in collectionInstances)
                 {
@@ -631,36 +668,6 @@ namespace XMLSugar
                     }
                 }
 
-
-                /*
-                foreach (var item in this.Childrens)
-                {
-
-                    if (item._link.Single != null)
-                    {
-                        var foundCollectionIdx = collectionInstances.IndexOf(item._link.Single);
-                        if (foundCollectionIdx > -1)
-                        {
-                            item.GenerateWriter(writer);
-                            item._link.Single.ToElement(item);
-                            collectionInstances[foundCollectionIdx] = null; // Flag instance as already processed
-                        }
-                        else
-                            throw new TimeZoneNotFoundException();
-                    } else
-                    {
-                        //item.GenerateWriter(writer);
-                    }
-                }
-
-                // Add new instances present in collection to childrens
-                var newCollectionInstances = collectionInstances.Where(t => t != null).ToList();
-                foreach (var item in newCollectionInstances)
-                {
-                    var newElementForIstance = this.CreateElementInside(item);
-                    newElementForIstance.GenerateWriter(writer);
-                }
-                */
             }
             else
             {
@@ -678,57 +685,3 @@ namespace XMLSugar
         }
     }
 }
-/*
-
-                foreach (var item in this.Childrens)
-                {
-
-                    if (item._link.Single != null)
-                    {
-                        var foundCollectionIdx = collectionInstances.IndexOf(item._link.Single);
-                        if (foundCollectionIdx > -1)
-                        {
-                            collectionInstances[foundCollectionIdx] = null; // Flag instance as already processed
-                        }
-                        else
-                            throw new TimeZoneNotFoundException();
-                    } else
-                    {
-                        //item.GenerateWriter(writer);
-                    }
-                }
-
-                // Add new instances present in collection to childrens
-                var newCollectionInstances = collectionInstances.Where(t => t != null).ToList();
-                foreach (var item in newCollectionInstances)
-                {
-                    var typeElements = this.Childrens.Where(t => (t._link.Single == null) ? false : t._link.Single.GetType().Equals(item.GetType())).LastOrNull();
-                    
-                    var newElementForIstance = XMLSugar_Element.CreateElement(item);
-
-
-                    if (typeElements != null)
-                    {
-                        typeElements.InsertAfter(newElementForIstance);
-                    }
-                    else
-                    {
-                        this.InsertInside(newElementForIstance);
-                    }
-                    //newElementForIstance.GenerateWriter(writer);
-
-                }
-
-                foreach (var item in this.Childrens)
-                {
-                    if (item._link.Single != null)
-                    {
-                        item.GenerateWriter(writer);
-                        item._link.Single.ToElement(item);
-                    }
-                    else
-                    {
-                        item.GenerateWriter(writer);
-                    }
-                }
-*/
