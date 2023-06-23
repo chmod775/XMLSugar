@@ -480,6 +480,35 @@ namespace XMLSugar
             return ret;
         }
 
+        public IList<T> MapCollection<T>(string path, Func<XMLSugar_Element, T> mapper, bool immutable = false) where T : XMLSugar_Instance
+        {
+            var ret = new List<T>();
+
+            var collectionElement = this.AccessFirstOrNull(path);
+            if (collectionElement == null) throw new Exception($"Collection element {path} not found.");
+            if (collectionElement._link.Single != null) throw new Exception("Element is already linked to as single. Access using AccessSingle.");
+
+            if (!immutable)
+            {
+                collectionElement._link.Collection = collectionElement._link.Collection ?? new Dictionary<Type, IList>();
+                if (collectionElement._link.Collection.ContainsKey(typeof(T)))
+                    return collectionElement._link.Collection[typeof(T)] as IList<T>;
+
+                collectionElement._link.Collection[typeof(T)] = ret;
+            }
+
+            var foundElements = collectionElement.Childrens;
+
+            foreach (var item in foundElements)
+            {
+                T newItemIstance = mapper(item);
+                if (newItemIstance != null)
+                    ret.Add(newItemIstance);
+            }
+
+            return ret;
+        }
+
         public IList<T> MapCollection<T>(string path, string selector, Func<XMLSugar_Element, T> mapper, bool immutable = false) where T : XMLSugar_Instance
         {
             var ret = new List<T>();
